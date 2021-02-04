@@ -1,27 +1,44 @@
-// const redux action types
 export const GET_POSTS = "GET_POSTS";
-// get posts telling Redux that we are going to fetch posts from the API call
+
+////  post from Api fatch
 export const GET_POSTS_SUCCESS = "GET_POSTS_SUCCESS";
-// getpostssucess passing the posts to redux on a successful API call
+/// we passsing the post on succse from api
 export const GET_POSTS_FAILURE = "GET_POSTS_FAILURE";
-// get posts failure informing redux that an error was encountered
-// during redux on failed API call
+/// we passsing the post on falure from api
 
 // create action creators, which are functions that return an action
-// which consts of the type and an optional payload loading data
-
+// which consists of the type and an optional payload loading data
 export const getPosts = () => ({
-	type: GET_POSTS,
+  type: GET_POSTS,
+});
+export const getPostsSuccess = (posts) => ({
+  type: GET_POSTS_SUCCESS,
+  payload: posts,
+});
+export const getPostsFailure = () => ({
+  type: GET_POSTS_FAILURE,
 });
 
-export const successPosts = (Post) => ({
-    type: GET_POSTS_SUCCESS,
-    payload: posts,
-});
+/// async Tunk action
+// Finally, make the asynchronous thunk action that combines all three of the above actions.
+// When called, it will dispatch the initial getPosts()
+// action to inform Redux to prepare for an API call, then in a try/catch, do everything necessary to get the data,
+// and dispatch a success or failure action as necessary.
 
-export const failPosts = () => ({
-	type: GET_POSTS_FAILURE,
-});
-
-
-
+export function fetchPosts() {
+  return async (dispatch) => {
+    dispatch(getPosts());
+    //dispatch is a method available in the store object that accepts
+    //an object which is used to update the Redux state
+    //usually this object is the result of invoking an action creator
+    try {
+      const response = await fetch(
+        "https://jsonplaceholder.typicode.com/posts"
+      );
+      const data = await response.json();
+      dispatch(getPostsSuccess(data));
+    } catch (error) {
+      dispatch(getPostsFailure());
+    }
+  };
+}
